@@ -47,7 +47,7 @@ function soundIsLoaded () {
 function draw () {
   background(0)
   // Draw the video
-  image(flippedVideo, 0, 0)
+  image(flippedVideo, 0, 0, 320, 240)
 
   // Set volume
   // song.setVolume(slider.value());
