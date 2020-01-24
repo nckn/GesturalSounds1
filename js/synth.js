@@ -10,10 +10,13 @@ let pose;
 let skeleton;
 
 // Oscillator
-var wave;
+var oscillators = [
+  {type: 'sine', playing: false},
+  {type: 'square', playing: false}
+];
 var button;
 var slider;
-var playing = false;
+// var playing = false;
 let yS = 0;
 let range = {min: 40, max: 120};
 
@@ -26,13 +29,16 @@ function setup() {
   poseNet.on('pose', gotPoses);
 
   // Synth
-  wave = new p5.Oscillator();
-  slider = createSlider(100, 1200, 440);
+  oscillators.forEach(osc => {
+    osc.wave = new p5.Oscillator();
+    osc.wave.setType(osc.type);
+    osc.wave.start();
+    osc.wave.freq(440);
+    osc.wave.amp(0);
+  });
 
-  wave.setType('sine');
-  wave.start();
-  wave.freq(440);
-  wave.amp(0);
+  // Create slider
+  slider = createSlider(100, 1200, 440);
 
   button = createButton('play/pause');
   button.mousePressed(toggle);
@@ -87,8 +93,11 @@ function draw() {
   }
 
   // Synth
-  // wave.freq(slider.value()); // The slider
-  wave.freq(yS);
+  // osc.freq(slider.value()); // The slider
+  // Synth
+  oscillators.forEach(osc => {
+    osc.wave.freq(yS);
+  });
   // print('slider val: ' + slider.value());
   // if (playing) {
   //   background(255, 0, 255);
@@ -98,11 +107,14 @@ function draw() {
 }
 
 function toggle() {
-  if (!playing) {
-    wave.amp(0.5, 1);
-    playing = true;
-  } else {
-    wave.amp(0, 1);
-    playing = false;
-  }
+  // Synth
+  oscillators.forEach(osc => {
+    if (!osc.playing) {
+      osc.wave.amp(0.5, 1);
+      osc.playing = true;
+    } else {
+      osc.wave.amp(0, 1);
+      osc.playing = false;
+    }
+  });
 }
