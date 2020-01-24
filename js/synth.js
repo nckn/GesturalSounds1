@@ -9,12 +9,31 @@ let poseNet;
 let pose;
 let skeleton;
 
+// Oscillator
+var wave;
+var button;
+var slider;
+var playing = false;
+
 function setup() {
   createCanvas(640, 480);
+  // poseNet
   video = createCapture(VIDEO);
   video.hide();
   poseNet = ml5.poseNet(video, modelLoaded);
   poseNet.on('pose', gotPoses);
+
+  // Synth
+  wave = new p5.Oscillator();
+  slider = createSlider(100, 1200, 440);
+
+  wave.setType('sine');
+  wave.start();
+  wave.freq(440);
+  wave.amp(0);
+
+  button = createButton('play/pause');
+  button.mousePressed(toggle);
 }
 
 function gotPoses(poses) {
@@ -56,5 +75,23 @@ function draw() {
       stroke(255);
       line(a.position.x, a.position.y, b.position.x, b.position.y);
     }
+  }
+
+  // Synth
+  wave.freq(slider.value());
+  // if (playing) {
+  //   background(255, 0, 255);
+  // } else {
+  //   background(51);
+  // }
+}
+
+function toggle() {
+  if (!playing) {
+    wave.amp(0.5, 1);
+    playing = true;
+  } else {
+    wave.amp(0, 1);
+    playing = false;
   }
 }
