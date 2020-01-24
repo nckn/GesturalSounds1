@@ -8,7 +8,7 @@ let video;
 let poseNet;
 let pose;
 let skeleton;
-let dist;
+let distance;
 let remappedDist;
 
 // Oscillator
@@ -85,15 +85,14 @@ function draw() {
   if (pose) {
     let eyeR = pose.rightEye;
     let eyeL = pose.leftEye;
-    let d = dist(eyeR.x, eyeR.y, eyeL.x, eyeL.y);
-    dist = d
+    distance = dist(eyeR.x, eyeR.y, eyeL.x, eyeL.y);
     // Distance
-    print('distance: ' + dist);
+    print('distance: ' + distance);
     // Remap value
-    remappedDist = map(dist, 0, 200, 20, 0);
+    remappedDist = map(distance, 0, 200, 20, 0);
 
     fill(255, 0, 0);
-    ellipse(pose.nose.x, pose.nose.y, dist);
+    ellipse(pose.nose.x, pose.nose.y, distance);
     fill(0, 0, 255);
     ellipse(pose.rightWrist.x, pose.rightWrist.y, 32);
     ellipse(pose.leftWrist.x, pose.leftWrist.y, 32);
