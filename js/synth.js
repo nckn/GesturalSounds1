@@ -15,7 +15,7 @@ let remappedDist;
 // Oscillator
 var oscillators = [
   {type: 'sine', playing: false, curPos: 0, curFreq: 0, mod: 0},
-  {type: 'square', playing: false, curPos: 0, curFreq: 0, mod: 0}
+  {type: 'sine', playing: false, curPos: 0, curFreq: 0, mod: 0}
 ];
 var button;
 var slider;
@@ -68,6 +68,7 @@ function setup() {
 
   button = createButton('play/pause');
   button.mousePressed(toggle);
+
 }
 
 function gotPoses(poses) {
@@ -163,6 +164,7 @@ function draw() {
   // } else {
   //   background(51);
   // }
+  
 }
 
 function toggle() {
@@ -176,4 +178,16 @@ function toggle() {
       osc.playing = false;
     }
   });
+}
+
+function keyPressed() {
+  print(keyCode)
+  if (keyCode === 32) {
+    toggle();
+  }
+  // if (value === 0) {
+  //   value = 255;
+  // } else {
+  //   value = 0;
+  // }
 }
