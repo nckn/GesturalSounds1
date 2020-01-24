@@ -20,7 +20,7 @@ var button;
 var slider;
 // var playing = false;
 let yS = 0;
-let range = {min: 40, max: 120};
+let range = {min: 40, max: 180};
 
 // Modulator
 let modulator; // this oscillator will modulate the amplitude of the carrier
@@ -87,7 +87,7 @@ function draw() {
     let eyeL = pose.leftEye;
     distance = dist(eyeR.x, eyeR.y, eyeL.x, eyeL.y);
     // Distance
-    print('distance: ' + distance);
+    // print('distance: ' + distance);
     // Remap value
     remappedDist = map(distance, 0, 200, 20, 0);
 
@@ -101,8 +101,9 @@ function draw() {
     // print('point val: ' + pose.nose.y);
     
     // Remap value
-    yS = map(pose.nose.y, 0, 480, range.min, range.max, true);
-    // print('yS val: ' + yS);
+    // yS = map(pose.nose.y, 0, 480, range.min, range.max, true);
+    yS = map(pose.nose.y, 480, 0, range.min, range.max);
+    print('yS val: ' + yS);
 
     for (let i = 0; i < pose.keypoints.length; i++) {
       let x = pose.keypoints[i].position.x;
