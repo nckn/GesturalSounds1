@@ -14,6 +14,8 @@ var wave;
 var button;
 var slider;
 var playing = false;
+let yS = 0;
+let range = {min: 40, max: 120};
 
 function setup() {
   createCanvas(640, 480);
@@ -61,6 +63,13 @@ function draw() {
     ellipse(pose.rightWrist.x, pose.rightWrist.y, 32);
     ellipse(pose.leftWrist.x, pose.leftWrist.y, 32);
 
+    // log value
+    // print('point val: ' + pose.nose.y);
+    
+    // Remap value
+    yS = map(pose.nose.y, 0, 480, range.min, range.max, true);
+    print('yS val: ' + yS);
+
     for (let i = 0; i < pose.keypoints.length; i++) {
       let x = pose.keypoints[i].position.x;
       let y = pose.keypoints[i].position.y;
@@ -78,7 +87,9 @@ function draw() {
   }
 
   // Synth
-  wave.freq(slider.value());
+  // wave.freq(slider.value()); // The slider
+  wave.freq(yS);
+  // print('slider val: ' + slider.value());
   // if (playing) {
   //   background(255, 0, 255);
   // } else {
