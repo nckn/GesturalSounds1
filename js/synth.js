@@ -14,8 +14,8 @@ let remappedDist;
 
 // Oscillator
 var oscillators = [
-  {type: 'sine', playing: false, curPos: 0, curFreq: 0},
-  {type: 'square', playing: false, curPos: 0, curFreq: 0}
+  {type: 'sine', playing: false, curPos: 0, curFreq: 0, mod: 0},
+  {type: 'square', playing: false, curPos: 0, curFreq: 0, mod: 0}
 ];
 var button;
 var slider;
@@ -24,7 +24,7 @@ var slider;
 let range = {min: 40, max: 180};
 
 // Modulator
-let modulator; // this oscillator will modulate the amplitude of the carrier
+// let modulator; // this oscillator will modulate the amplitude of the carrier
 
 function setup() {
   createCanvas(640, 480);
@@ -43,25 +43,25 @@ function setup() {
     osc.wave.setType(osc.type);
     osc.wave.start();
     osc.wave.freq(440);
-    osc.wave.amp(0);
+    osc.wave.amp(0.5);
     // Modulate the carrier's amplitude with the modulator
     // Optionally, we can scale the signal.
     // osc.wave.amp(modulator.scale(-1, 1, 1, -1));
+    // Modulator
+    osc.mod = new p5.Oscillator('triangle');
+    osc.mod.disconnect(); // disconnect the modulator from master output
+    osc.mod.freq(5);
+    osc.mod.amp(1);
+    osc.mod.start();
+    // Hook osc up w/ its mod
+    // osc.wave.amp(0); // This lines enables the mod effect
+    // osc.wave.amp(osc.mod.scale(-1, 1, 1, -1)); // This lines enables the mod effect
   });
   
-  // Modulator
-  modulator = new p5.Oscillator('triangle');
-  modulator.disconnect(); // disconnect the modulator from master output
-  modulator.freq(5);
-  modulator.amp(1);
-  modulator.start();
 
   // Modulate the carrier's amplitude with the modulator
   // Optionally, we can scale the signal.
   // oscillators[0].wave.amp(modulator.scale(-1, 1, 1, -1));
-  // oscillators.forEach(osc => {
-  //   osc.wave.amp(modulator.scale(-1, 1, 1, -1));
-  // });
 
   // Create slider
   slider = createSlider(100, 1200, 440);
@@ -96,8 +96,9 @@ function draw() {
     // Remap value
     remappedDist = map(distance, 0, 200, 20, 0);
 
-    fill(255, 0, 0);
-    ellipse(pose.nose.x, pose.nose.y, distance);
+    // Draw nose
+    // fill(255, 0, 0);
+    // ellipse(pose.nose.x, pose.nose.y, distance);
     
     // Draw wrist points
     // fill(0, 0, 255);
@@ -143,16 +144,16 @@ function draw() {
   // let modFreq = map(mouseY, 0, height, 20, 0);
   // modulator.freq(modFreq);
 
-  // Dist
-  modulator.freq(remappedDist);
-
-  let modAmp = map(mouseX, 0, width, 0, 1);
-  modulator.amp(modAmp, 0.01); // fade time of 0.1 for smooth fading
-
+  
   // Synth
   // osc.freq(slider.value()); // The slider
   // Synth
   oscillators.forEach(osc => {
+    // Update mods
+    osc.mod.freq(remappedDist);
+    let modAmp = map(mouseX, 0, width, 0, 1);
+    osc.mod.amp(modAmp, 0.01); // fade time of 0.1 for smooth fading
+    // Update oscillators
     osc.curFreq = map(osc.curPos, 480, 0, range.min, range.max);
     osc.wave.freq(osc.curFreq);
   });
