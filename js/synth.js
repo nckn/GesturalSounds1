@@ -15,7 +15,7 @@ let remappedDist;
 // Oscillator
 var oscillators = [
   {type: 'sine', playing: false, curPos: 0, curFreq: 0, mod: 0},
-  {type: 'sine', playing: false, curPos: 0, curFreq: 0, mod: 0}
+  {type: 'sawtooth', playing: false, curPos: 0, curFreq: 0, mod: 0}
 ];
 var button;
 var slider;
@@ -43,7 +43,7 @@ function setup() {
     osc.wave.setType(osc.type);
     osc.wave.start();
     osc.wave.freq(440);
-    osc.wave.amp(0.5);
+    // osc.wave.amp(0.5); // Uncomment this when mod effect is not wanted
     // Modulate the carrier's amplitude with the modulator
     // Optionally, we can scale the signal.
     // osc.wave.amp(modulator.scale(-1, 1, 1, -1));
@@ -54,8 +54,8 @@ function setup() {
     osc.mod.amp(1);
     osc.mod.start();
     // Hook osc up w/ its mod
-    // osc.wave.amp(0); // This lines enables the mod effect
-    // osc.wave.amp(osc.mod.scale(-1, 1, 1, -1)); // This lines enables the mod effect
+    osc.wave.amp(0); // This lines enables the mod effect
+    osc.wave.amp(osc.mod.scale(-1, 1, 1, -1)); // This lines enables the mod effect
   });
   
 
