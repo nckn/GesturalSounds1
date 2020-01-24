@@ -5,6 +5,7 @@
 // https://editor.p5js.org/codingtrain/sketches/ULA97pJXR
 
 let video;
+// let flippedVideo;
 let poseNet;
 let pose;
 let skeleton;
@@ -13,13 +14,13 @@ let remappedDist;
 
 // Oscillator
 var oscillators = [
-  {type: 'sine', playing: false},
-  {type: 'square', playing: false}
+  {type: 'sine', playing: false, curPos: 0, curFreq: 0},
+  {type: 'square', playing: false, curPos: 0, curFreq: 0}
 ];
 var button;
 var slider;
 // var playing = false;
-let yS = 0;
+// let curFreq = [];
 let range = {min: 40, max: 180};
 
 // Modulator
@@ -33,6 +34,8 @@ function setup() {
   poseNet = ml5.poseNet(video, modelLoaded);
   poseNet.on('pose', gotPoses);
 
+  // Flip video
+  // flippedVideo = ml5.flipImage(video)
   
   // Synth
   oscillators.forEach(osc => {
@@ -55,7 +58,7 @@ function setup() {
 
   // Modulate the carrier's amplitude with the modulator
   // Optionally, we can scale the signal.
-  oscillators[0].wave.amp(modulator.scale(-1, 1, 1, -1));
+  // oscillators[0].wave.amp(modulator.scale(-1, 1, 1, -1));
   // oscillators.forEach(osc => {
   //   osc.wave.amp(modulator.scale(-1, 1, 1, -1));
   // });
@@ -80,7 +83,9 @@ function modelLoaded() {
 }
 
 function draw() {
+  // Draw video
   image(video, 0, 0);
+  // image(flippedVideo, 0, 0, 640, 480);
 
   if (pose) {
     let eyeR = pose.rightEye;
@@ -93,32 +98,45 @@ function draw() {
 
     fill(255, 0, 0);
     ellipse(pose.nose.x, pose.nose.y, distance);
+    
+    // Draw wrist points
+    // fill(0, 0, 255);
+    // ellipse(pose.rightWrist.x, pose.rightWrist.y, 32);
+    // ellipse(pose.leftWrist.x, pose.leftWrist.y, 32);
+    
+    // Draw ear points
     fill(0, 0, 255);
-    ellipse(pose.rightWrist.x, pose.rightWrist.y, 32);
-    ellipse(pose.leftWrist.x, pose.leftWrist.y, 32);
+    ellipse(pose.leftEar.x, pose.leftEar.y, 32);
+    ellipse(pose.rightEar.x, pose.rightEar.y, 32);
 
     // log value
     // print('point val: ' + pose.nose.y);
     
     // Remap value
-    // yS = map(pose.nose.y, 0, 480, range.min, range.max, true);
-    yS = map(pose.nose.y, 480, 0, range.min, range.max);
-    print('yS val: ' + yS);
+    // curFreq = map(pose.nose.y, 0, 480, range.min, range.max, true);
+    // oscillators[0].curFreq = map(pose.nose.y, 480, 0, range.min, range.max);
+    // print('curFreq val: ' + oscillators[0].curFreq);
 
-    for (let i = 0; i < pose.keypoints.length; i++) {
-      let x = pose.keypoints[i].position.x;
-      let y = pose.keypoints[i].position.y;
-      fill(0, 255, 0);
-      ellipse(x, y, 16, 16);
-    }
+    // Draw ellipses for each point
+    // for (let i = 0; i < pose.keypoints.length; i++) {
+    //   let x = pose.keypoints[i].position.x;
+    //   let y = pose.keypoints[i].position.y;
+    //   fill(0, 255, 0);
+    //   ellipse(x, y, 16, 16);
+    // }
 
-    for (let i = 0; i < skeleton.length; i++) {
-      let a = skeleton[i][0];
-      let b = skeleton[i][1];
-      strokeWeight(2);
-      stroke(255);
-      line(a.position.x, a.position.y, b.position.x, b.position.y);
-    }
+    // Draw lines btw each connected point in skeleton
+    // for (let i = 0; i < skeleton.length; i++) {
+    //   let a = skeleton[i][0];
+    //   let b = skeleton[i][1];
+    //   strokeWeight(2);
+    //   stroke(255);
+    //   line(a.position.x, a.position.y, b.position.x, b.position.y);
+    // }
+
+    // Set the different pos for each osc to be translated to a freq
+    oscillators[0].curPos = pose.leftEar.y
+    oscillators[1].curPos = pose.rightEar.y
   }
 
   // map mouseY to moodulator freq between 0 and 20hz
@@ -135,7 +153,8 @@ function draw() {
   // osc.freq(slider.value()); // The slider
   // Synth
   oscillators.forEach(osc => {
-    osc.wave.freq(yS);
+    osc.curFreq = map(osc.curPos, 480, 0, range.min, range.max);
+    osc.wave.freq(osc.curFreq);
   });
   // print('slider val: ' + slider.value());
   // if (playing) {
