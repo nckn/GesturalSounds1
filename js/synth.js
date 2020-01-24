@@ -20,6 +20,9 @@ var slider;
 let yS = 0;
 let range = {min: 40, max: 120};
 
+// Modulator
+let modulator; // this oscillator will modulate the amplitude of the carrier
+
 function setup() {
   createCanvas(640, 480);
   // poseNet
@@ -28,6 +31,7 @@ function setup() {
   poseNet = ml5.poseNet(video, modelLoaded);
   poseNet.on('pose', gotPoses);
 
+  
   // Synth
   oscillators.forEach(osc => {
     osc.wave = new p5.Oscillator();
@@ -35,7 +39,24 @@ function setup() {
     osc.wave.start();
     osc.wave.freq(440);
     osc.wave.amp(0);
+    // Modulate the carrier's amplitude with the modulator
+    // Optionally, we can scale the signal.
+    // osc.wave.amp(modulator.scale(-1, 1, 1, -1));
   });
+  
+  // Modulator
+  modulator = new p5.Oscillator('triangle');
+  modulator.disconnect(); // disconnect the modulator from master output
+  modulator.freq(5);
+  modulator.amp(1);
+  modulator.start();
+
+  // Modulate the carrier's amplitude with the modulator
+  // Optionally, we can scale the signal.
+  oscillators[0].wave.amp(modulator.scale(-1, 1, 1, -1));
+  // oscillators.forEach(osc => {
+  //   osc.wave.amp(modulator.scale(-1, 1, 1, -1));
+  // });
 
   // Create slider
   slider = createSlider(100, 1200, 440);
@@ -58,6 +79,13 @@ function modelLoaded() {
 
 function draw() {
   image(video, 0, 0);
+
+  // map mouseY to moodulator freq between 0 and 20hz
+  let modFreq = map(mouseY, 0, height, 20, 0);
+  modulator.freq(modFreq);
+
+  let modAmp = map(mouseX, 0, width, 0, 1);
+  modulator.amp(modAmp, 0.01); // fade time of 0.1 for smooth fading
 
   if (pose) {
     let eyeR = pose.rightEye;
