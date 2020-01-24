@@ -8,6 +8,8 @@ let video;
 let poseNet;
 let pose;
 let skeleton;
+let dist;
+let remappedDist;
 
 // Oscillator
 var oscillators = [
@@ -80,19 +82,18 @@ function modelLoaded() {
 function draw() {
   image(video, 0, 0);
 
-  // map mouseY to moodulator freq between 0 and 20hz
-  let modFreq = map(mouseY, 0, height, 20, 0);
-  modulator.freq(modFreq);
-
-  let modAmp = map(mouseX, 0, width, 0, 1);
-  modulator.amp(modAmp, 0.01); // fade time of 0.1 for smooth fading
-
   if (pose) {
     let eyeR = pose.rightEye;
     let eyeL = pose.leftEye;
     let d = dist(eyeR.x, eyeR.y, eyeL.x, eyeL.y);
+    dist = d
+    // Distance
+    print('distance: ' + dist);
+    // Remap value
+    remappedDist = map(dist, 0, 200, 20, 0);
+
     fill(255, 0, 0);
-    ellipse(pose.nose.x, pose.nose.y, d);
+    ellipse(pose.nose.x, pose.nose.y, dist);
     fill(0, 0, 255);
     ellipse(pose.rightWrist.x, pose.rightWrist.y, 32);
     ellipse(pose.leftWrist.x, pose.leftWrist.y, 32);
@@ -102,7 +103,7 @@ function draw() {
     
     // Remap value
     yS = map(pose.nose.y, 0, 480, range.min, range.max, true);
-    print('yS val: ' + yS);
+    // print('yS val: ' + yS);
 
     for (let i = 0; i < pose.keypoints.length; i++) {
       let x = pose.keypoints[i].position.x;
@@ -119,6 +120,16 @@ function draw() {
       line(a.position.x, a.position.y, b.position.x, b.position.y);
     }
   }
+
+  // map mouseY to moodulator freq between 0 and 20hz
+  // let modFreq = map(mouseY, 0, height, 20, 0);
+  // modulator.freq(modFreq);
+
+  // Dist
+  modulator.freq(remappedDist);
+
+  let modAmp = map(mouseX, 0, width, 0, 1);
+  modulator.amp(modAmp, 0.01); // fade time of 0.1 for smooth fading
 
   // Synth
   // osc.freq(slider.value()); // The slider
